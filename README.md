@@ -12,6 +12,8 @@ import (
   "github.com/gin-gonic/gin"
 
 log := logrus.New()
+// hooks, config,...
+
 r := gin.New()
 r.Use(ginlogrus.Logger(log), gin.Recovery())
 
