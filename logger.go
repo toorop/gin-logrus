@@ -41,6 +41,7 @@ func Logger(log *logrus.Logger) gin.HandlerFunc {
 		}
 
 		entry := logrus.NewEntry(log).WithFields(logrus.Fields{
+			"hostname":   hostname,
 			"statusCode": statusCode,
 			"latency":    latency, // time to process
 			"clientIP":   clientIP,
