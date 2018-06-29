@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 // 2016-09-27 09:38:21.541541811 +0200 CEST
@@ -26,7 +26,7 @@ func Logger(log *logrus.Logger) gin.HandlerFunc {
 		start := time.Now()
 		c.Next()
 		stop := time.Since(start)
-		latency := int(math.Ceil(float64(stop.Nanoseconds()) / 1000.0))
+		latency := int(math.Ceil(float64(stop.Nanoseconds()) / 1000000.0))
 		statusCode := c.Writer.Status()
 		clientIP := c.ClientIP()
 		clientUserAgent := c.Request.UserAgent()
