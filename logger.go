@@ -20,6 +20,10 @@ var timeFormat = "02/Jan/2006:15:04:05 -0700"
 
 // Logger is the logrus logger handler
 func Logger(log *logrus.Logger) gin.HandlerFunc {
+	hostname, err := os.Hostname()
+	if err != nil {
+		hostname = "unknow"
+	}
 	return func(c *gin.Context) {
 		// other handler can change c.Path so:
 		path := c.Request.URL.Path
@@ -31,10 +35,6 @@ func Logger(log *logrus.Logger) gin.HandlerFunc {
 		clientIP := c.ClientIP()
 		clientUserAgent := c.Request.UserAgent()
 		referer := c.Request.Referer()
-		hostname, err := os.Hostname()
-		if err != nil {
-			hostname = "unknow"
-		}
 		dataLength := c.Writer.Size()
 		if dataLength < 0 {
 			dataLength = 0
