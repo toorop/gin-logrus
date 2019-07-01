@@ -19,7 +19,7 @@ import (
 var timeFormat = "02/Jan/2006:15:04:05 -0700"
 
 // Logger is the logrus logger handler
-func Logger(log *logrus.Logger) gin.HandlerFunc {
+func Logger(logger logrus.FieldLogger) gin.HandlerFunc {
 	hostname, err := os.Hostname()
 	if err != nil {
 		hostname = "unknow"
@@ -40,7 +40,7 @@ func Logger(log *logrus.Logger) gin.HandlerFunc {
 			dataLength = 0
 		}
 
-		entry := logrus.NewEntry(log).WithFields(logrus.Fields{
+		entry := logger.WithFields(logrus.Fields{
 			"hostname":   hostname,
 			"statusCode": statusCode,
 			"latency":    latency, // time to process
