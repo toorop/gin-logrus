@@ -3,6 +3,7 @@ package ginlogrus
 import (
 	"fmt"
 	"math"
+	"net/http"
 	"os"
 	"time"
 
@@ -19,11 +20,22 @@ import (
 var timeFormat = "02/Jan/2006:15:04:05 -0700"
 
 // Logger is the logrus logger handler
-func Logger(logger logrus.FieldLogger) gin.HandlerFunc {
+func Logger(logger logrus.FieldLogger, notLogged ...string) gin.HandlerFunc {
 	hostname, err := os.Hostname()
 	if err != nil {
 		hostname = "unknow"
 	}
+
+	var skip map[string]struct{}
+
+	if length := len(notLogged); length > 0 {
+		skip = make(map[string]struct{}, length)
+
+		for _, p := range notLogged {
+			skip[p] = struct{}{}
+		}
+	}
+
 	return func(c *gin.Context) {
 		// other handler can change c.Path so:
 		path := c.Request.URL.Path
@@ -38,6 +50,10 @@ func Logger(logger logrus.FieldLogger) gin.HandlerFunc {
 		dataLength := c.Writer.Size()
 		if dataLength < 0 {
 			dataLength = 0
+		}
+
+		if _, ok := skip[path]; ok {
+			return
 		}
 
 		entry := logger.WithFields(logrus.Fields{
@@ -56,9 +72,9 @@ func Logger(logger logrus.FieldLogger) gin.HandlerFunc {
 			entry.Error(c.Errors.ByType(gin.ErrorTypePrivate).String())
 		} else {
 			msg := fmt.Sprintf("%s - %s [%s] \"%s %s\" %d %d \"%s\" \"%s\" (%dms)", clientIP, hostname, time.Now().Format(timeFormat), c.Request.Method, path, statusCode, dataLength, referer, clientUserAgent, latency)
-			if statusCode > 499 {
+			if statusCode >= http.StatusInternalServerError {
 				entry.Error(msg)
-			} else if statusCode > 399 {
+			} else if statusCode >= http.StatusBadRequest {
 				entry.Warn(msg)
 			} else {
 				entry.Info(msg)
