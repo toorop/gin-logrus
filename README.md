@@ -7,7 +7,7 @@
 ## Usage
 ```go
 import (
-  "github.com/Sirupsen/logrus"
+  "github.com/sirupsen/logrus"
   "github.com/toorop/gin-logrus"
   "github.com/gin-gonic/gin"
 
